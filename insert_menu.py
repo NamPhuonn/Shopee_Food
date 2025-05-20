@@ -52,7 +52,7 @@ def load_data_to_postgres(csv_files):
         host = "shopee.postgres.database.azure.com"
         database = "delivery_info"
         user = "Numpy"
-        password = "!Namphuong592003"
+        password = "********"
         conn = connect_to_azure_postgres(host, database, user, password)
 
         for csv_file_path in csv_files:
