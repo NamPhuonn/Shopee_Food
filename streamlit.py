@@ -41,7 +41,7 @@ def connect_to_azure_postgres(host, database, user, password, port=5432):
 host = "shopee.postgres.database.azure.com"
 database = "delivery_info"
 user = "Numpy"
-password = "!Namphuong592003"
+password = "*********"
 conn = connect_to_azure_postgres(host, database, user, password)
 
 @st.cache_data
