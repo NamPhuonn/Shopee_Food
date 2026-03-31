@@ -36,26 +36,11 @@ def request_dish_detail(session, restaurant_id):
             "X-Foody-Client-Type": "1",
             "X-Foody-Client-Version": "3.0.0"
         },
-        timeout=(3, 10)  # Thời gian chờ kết nối là 3s và chờ phản hồi là 10s
+        timeout=(3, 10)  
     )
     response.raise_for_status()
     return response
 
-# def get_dish_details(session, restaurant_id):
-#     """Gửi yêu cầu API và lấy thông tin món ăn cho một restaurant_id."""
-#     menu = []
-#     response = request_dish_detail(session, restaurant_id)
-#     json_data = response.json()
-
-#     # Duyệt qua từng món ăn để lấy name và discount_price/price
-#     for catalog in json_data.get("data", {}).get("catalogs", []):
-#         for dish in catalog.get("dishes", []):
-#             name = dish.get("name")
-#             price = dish.get("discount_price", dish.get("price"))
-#             if name and price:
-#                 menu.append({"name": name, "price": int(price)})
-
-#     return {'restaurant_id': restaurant_id, 'menu': menu}
 def get_dish_details(session, request_id, restaurant_id):
     """Gửi yêu cầu API và lấy thông tin món ăn cho một restaurant_id."""
     dishes_list = []
@@ -110,7 +95,6 @@ def get_dishes(id_list, output_csv=output_path, batch_size=200):
                     if result:
                         results.append(result)
                 except Exception as exc:
-                    # print(f"Restaurant generated an exception: {exc}")
                     pass  
 
             if results:

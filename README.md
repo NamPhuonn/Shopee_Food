@@ -19,17 +19,21 @@ This project collects, processes, and analyzes food delivery data from ShopeeFoo
 
 ```
 Shopee_Food/
-├── crawl_delivery_infos.ipynb   # Crawl restaurant info from API
-├── crawl_menu.py               # Crawl menu/dish data from API
-├── clean_delivery_infos.ipynb  # Data cleaning & preprocessing
-├── insert_data.py              # Load restaurant data to PostgreSQL
-├── insert_menu.py             # Load menu data to PostgreSQL
-├── dag_shopee_food.py         # Airflow DAG for pipeline orchestration
-├── streamlit.py               # Interactive analytics dashboard
-├── EDA.ipynb                  # Exploratory Data Analysis
-└── data/
-    ├── delivery_info_clean.csv  # Cleaned restaurant dataset
-    └── menu_data.csv           # Menu/dish dataset
+├── notebook/
+│   ├── clean_delivery_infos.ipynb  # Data cleaning & preprocessing
+│   ├── crawl_delivery_infos.ipynb  # Crawl restaurant info from API
+│   └── EDA.ipynb                   # Exploratory Data Analysis
+├── sql-scripts/
+│   └── create_tables.sql           # Database schema creation
+├── data/
+│   └── delivery_info_clean.csv     # Cleaned restaurant dataset
+├── crawl_menu.py                   # Crawl menu/dish data from API
+├── dag_shopee_food.py              # Airflow DAG for pipeline orchestration
+├── insert_data.py                  # Load restaurant data to PostgreSQL
+├── insert_menu.py                  # Load menu data to PostgreSQL
+├── streamlit.py                    # Interactive analytics dashboard
+├── requirements.txt                # Python dependencies
+└── README.md                       # Project documentation
 ```
 
 ## Technologies Used

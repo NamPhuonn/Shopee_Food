@@ -1,0 +1,10 @@
+streamlit
+psycopg2-binary
+pandas
+scikit-learn
+matplotlib
+seaborn
+numpy
+altair
+plotly
+python-dotenv
