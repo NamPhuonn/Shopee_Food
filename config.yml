@@ -1,0 +1,6 @@
+postgres:
+  host: shopee.postgres.database.azure.com
+  database: delivery_info
+  user: Numpy
+  password: 
+  port: 5432
