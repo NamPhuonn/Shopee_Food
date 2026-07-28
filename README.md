@@ -20,7 +20,7 @@ This project collects, processes, and analyzes food delivery data from ShopeeFoo
 - Price distribution patterns by cuisine and category
 - Quality merchant insights
 
-![Overview](image/pipeline_overview.png)
+![Overview](image/overview.png)
 
 ## 🗂️ Project Structure
 
