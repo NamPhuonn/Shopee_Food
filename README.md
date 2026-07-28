@@ -2,7 +2,16 @@
 
 A comprehensive data engineering project that crawls restaurant and menu data from ShopeeFood (Vietnam's leading food delivery platform), stores it in Azure PostgreSQL, and provides interactive analytics dashboards.
 
-## Project Overview
+## 🚀 Tech Stack
+
+![Airflow](https://img.shields.io/badge/Apache%20Airflow-Orchestration-017CEE?logo=apacheairflow)
+![Jupyter](https://img.shields.io/badge/Jupyter-EDA-F37626?logo=jupyter)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql)
+![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?logo=streamlit)
+![Microsoft Azure](https://img.shields.io/badge/Microsoft_Azure-Cloud-0078D4?logo=microsoftazure)
+![Python](https://img.shields.io/badge/Python-3.12.3-3776AB?logo=python)
+
+## 📌 Project Overview
 
 This project collects, processes, and analyzes food delivery data from ShopeeFood to understand:
 
@@ -11,34 +20,42 @@ This project collects, processes, and analyzes food delivery data from ShopeeFoo
 - Price distribution patterns by cuisine and category
 - Quality merchant insights
 
-## Pipeline
+![Overview](image/pipeline_overview.png)
 
-![Pipeline Overview](image/pipeline_overview.png)
-
-## Project Structure
+## 🗂️ Project Structure
 
 ```
 Shopee_Food/
+├── utils/
+│   ├── __init__.py                # Python package marker for shared helpers
+├── config.yml                     # PostgreSQL credentials and connection config
+│   └── postgres.py                # Shared PostgreSQL connection helper
+├── dags/
+│   └── dag_shopee_food.py          # Airflow DAG for pipeline orchestration
+├── dashboard/
+│   └── streamlit.py                # Interactive analytics dashboard
+├── data/
+│   └── delivery_info_clean.csv     # Cleaned restaurant dataset
+├── image/
 ├── notebook/
 │   ├── clean_delivery_infos.ipynb  # Data cleaning & preprocessing
 │   ├── crawl_delivery_infos.ipynb  # Crawl restaurant info from API
 │   └── EDA.ipynb                   # Exploratory Data Analysis
 ├── sql-scripts/
-│   └── create_tables.sql           # Database schema creation
-├── data/
-│   └── delivery_info_clean.csv     # Cleaned restaurant dataset
-├── crawl_menu.py                   # Crawl menu/dish data from API
-├── dag_shopee_food.py              # Airflow DAG for pipeline orchestration
-├── insert_data.py                  # Load restaurant data to PostgreSQL
-├── insert_menu.py                  # Load menu data to PostgreSQL
-├── streamlit.py                    # Interactive analytics dashboard
+│   └── create_table.sql            # Database schema creation
+├── src/
+│   ├── extraction/
+│   │   └── crawl_menu.py           # Crawl menu/dish data from API
+│   └── loading/
+│       ├── insert_data.py          # Load restaurant data to PostgreSQL
+│       └── insert_menu.py          # Load menu data to PostgreSQL
 ├── requirements.txt                # Python dependencies
 └── README.md                       # Project documentation
 ```
 
-## Technologies Used
+## 🛠️ Technologies Used
 
-### Data Collection
+### 📥 Data Collection
 
 | Technology           | Purpose                                         |
 | -------------------- | ----------------------------------------------- |
@@ -47,7 +64,7 @@ Shopee_Food/
 | `tqdm`               | Progress bars for batch processing              |
 | `concurrent.futures` | Parallel request execution (ThreadPoolExecutor) |
 
-### Data Processing
+### 🧹 Data Processing
 
 | Technology     | Purpose                                     |
 | -------------- | ------------------------------------------- |
@@ -56,20 +73,20 @@ Shopee_Food/
 | `scikit-learn` | TF-IDF vectorization for keyword extraction |
 | `ast`          | Python literal parsing for JSON strings     |
 
-### Database
+### 🗄️ Database
 
 | Technology                        | Purpose                       |
 | --------------------------------- | ----------------------------- |
 | `psycopg2`                        | PostgreSQL adapter for Python |
 | **Azure Database for PostgreSQL** | Cloud-hosted managed database |
 
-### Workflow Orchestration
+### 🔁 Workflow Orchestration
 
 | Technology         | Purpose                               |
 | ------------------ | ------------------------------------- |
 | **Apache Airflow** | Pipeline scheduling and orchestration |
 
-### Data Visualization
+### 📊 Data Visualization
 
 | Technology   | Purpose                             |
 | ------------ | ----------------------------------- |
@@ -80,9 +97,9 @@ Shopee_Food/
 | `altair`     | Declarative visualizations          |
 | `wordcloud`  | Word frequency visualization        |
 
-## Database Schema
+## 🧱 Database Schema
 
-### Tables
+### 🧰 Tables
 
 **restaurant** - Restaurant details
 
@@ -103,7 +120,7 @@ Shopee_Food/
 - `restaurant_id`, `menu_data` (JSON)
 - `start_date`, `end_date`, `is_current`
 
-## Features
+## ✨ Features
 
 - **Parallel Crawling**: 50 concurrent workers for efficient data collection
 - **Retry Logic**: Automatic retry with exponential backoff for failed requests
@@ -112,7 +129,7 @@ Shopee_Food/
 - **Interactive Dashboard**: Filter by district, category, price range, and keywords
 - **Airflow Integration**: Automated pipeline orchestration
 
-## Dashboard Preview
+## 🖥️ Dashboard Preview
 
 ### Restaurant Dashboard
 
