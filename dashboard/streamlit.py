@@ -1,12 +1,18 @@
 import ast
+import sys
+from pathlib import Path
 
 import altair as alt
 import matplotlib.pyplot as plt
 import pandas as pd
-import psycopg2
 import seaborn as sns
 import streamlit as st
 from sklearn.feature_extraction.text import TfidfVectorizer
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from utils.postgres import get_postgres_connection
 
 st.set_page_config(
     page_title="Analytics Dashboard",
@@ -14,24 +20,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
-
-
-@st.cache_resource
-def connect_to_azure_postgres(host, database, user, password, port=5432):
-    try:
-        conn = psycopg2.connect(
-            host=host,
-            database=database,
-            user=user,
-            password=password,
-            port=port,
-        )
-        print("Successfully connected to Azure PostgreSQL!")
-        return conn
-    except Exception as exc:
-        print("Unable to connect to Azure PostgreSQL:")
-        print(exc)
-        return None
 
 
 @st.cache_data
@@ -68,11 +56,12 @@ def get_data(query, _conn):
     return pd.read_sql(query, _conn)
 
 
-host = "shopee.postgres.database.azure.com"
-database = "delivery_info"
-user = "Numpy"
-password = "*********"
-conn = connect_to_azure_postgres(host, database, user, password)
+@st.cache_resource
+def get_connection():
+    return get_postgres_connection()
+
+
+conn = get_connection()
 
 if conn is None:
     st.error("Unable to connect to PostgreSQL. Please check the connection settings.")

@@ -1,36 +1,19 @@
 from pathlib import Path
-
-import psycopg2
+import sys
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = PROJECT_ROOT / "data"
+sys.path.insert(0, str(PROJECT_ROOT))
 
+import psycopg2
 
-def connect_to_azure_postgres(host, database, user, password, port=5432):
-    try:
-        conn = psycopg2.connect(
-            host=host,
-            database=database,
-            user=user,
-            password=password,
-            port=port,
-        )
-        print(f"Successfully connected to Azure PostgreSQL {database}!")
-        return conn
-    except psycopg2.Error as exc:
-        print("Unable to connect to Azure PostgreSQL:")
-        print(exc)
-        return None
+from utils.postgres import get_postgres_connection
 
 
 def insert_data_to_postgres():
     conn = None
     try:
-        host = "shopee.postgres.database.azure.com"
-        database = "delivery_info"
-        user = "Numpy"
-        password = "********"
-        conn = connect_to_azure_postgres(host, database, user, password)
+        conn = get_postgres_connection()
         if conn is None:
             return
 
@@ -65,7 +48,7 @@ def insert_data_to_postgres():
             cursor.execute("DROP TABLE IF EXISTS temp_restaurant_data;")
             print("Data has been inserted successfully.")
 
-    except (psycopg2.Error, OSError) as exc:
+    except (psycopg2.Error, OSError, KeyError) as exc:
         print("Unable to insert data into Azure PostgreSQL:")
         print(exc)
     finally:

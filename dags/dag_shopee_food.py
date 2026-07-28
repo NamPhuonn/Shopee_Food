@@ -1,14 +1,19 @@
 import csv
 from datetime import datetime, timezone
 from pathlib import Path
+import sys
 
-import psycopg2
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
+import psycopg2
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / "data"
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from utils.postgres import get_postgres_connection
+
 csv_file_path = DATA_DIR / "menu_data.csv"
 
 
@@ -46,31 +51,10 @@ def split_csv_file(input_file_path, num_splits=5):
     return split_files
 
 
-def connect_to_azure_postgres(host, database, user, password, port=5432):
-    try:
-        conn = psycopg2.connect(
-            host=host,
-            database=database,
-            user=user,
-            password=password,
-            port=port,
-        )
-        print("Successfully connected to Azure PostgreSQL!")
-        return conn
-    except psycopg2.Error as exc:
-        print("Unable to connect to Azure PostgreSQL:")
-        print(exc)
-        return None
-
-
 def load_data_to_postgres(csv_files):
     conn = None
     try:
-        host = "shopee.postgres.database.azure.com"
-        database = "delivery_info"
-        user = "Numpy"
-        password = "********"
-        conn = connect_to_azure_postgres(host, database, user, password)
+        conn = get_postgres_connection()
         if conn is None:
             return
 
