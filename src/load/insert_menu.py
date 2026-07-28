@@ -1,32 +1,36 @@
 import csv
 import psycopg2
+from pathlib import Path
 
 
-csv_file_path = '/home/phuonn/Shopee_food/UDPTDLTM_DATA/data/menu_data.csv'
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DATA_DIR = PROJECT_ROOT / 'data'
+csv_file_path = DATA_DIR / 'menu_data.csv'
 
 def split_csv_file(input_file_path, num_splits=5):
+    input_file_path = Path(input_file_path)
     split_files = []
     try:
         with open(input_file_path, 'r') as file:
             reader = csv.reader(file)
-            header = next(reader)  # Read the header row
+            header = next(reader)  # Read the header row.
 
             rows = list(reader)
             total_rows = len(rows)
             rows_per_file = total_rows // num_splits + (total_rows % num_splits > 0)
             
             for i in range(num_splits):
-                split_file_path = f"{input_file_path.rsplit('.', 1)[0]}_part_{i+1}.csv"
+                split_file_path = input_file_path.with_name(f"{input_file_path.stem}_part_{i+1}{input_file_path.suffix}")
                 with open(split_file_path, 'w', newline='') as split_file:
                     writer = csv.writer(split_file)
-                    writer.writerow(header)  # Write the header to each split file
+                    writer.writerow(header)  # Write the header to each split file.
                     writer.writerows(rows[i * rows_per_file: (i + 1) * rows_per_file])
                 
                 split_files.append(split_file_path)
         
-        print("Tách file CSV thành công:", split_files)
-    except Exception as e:
-        print("Không thể tách file CSV:")
+        print("CSV file split successfully:", split_files)
+    except (FileNotFoundError, csv.Error, OSError) as e:
+        print("Unable to split the CSV file:")
         print(e)
     return split_files
 
@@ -39,16 +43,16 @@ def connect_to_azure_postgres(host, database, user, password, port=5432):
             password=password,
             port=port
         )
-        print("Kết nối thành công tới Azure PostgreSQL!")
+        print("Successfully connected to Azure PostgreSQL!")
         return conn
-    except Exception as e:
-        print("Không thể kết nối tới Azure PostgreSQL:")
+    except psycopg2.Error as e:
+        print("Unable to connect to Azure PostgreSQL:")
         print(e)
         return None
 
 def load_data_to_postgres(csv_files):
     try:
-        # Kết nối đến PostgreSQL
+        # Connect to PostgreSQL.
         host = "shopee.postgres.database.azure.com"
         database = "delivery_info"
         user = "Numpy"
@@ -57,7 +61,7 @@ def load_data_to_postgres(csv_files):
 
         for csv_file_path in csv_files:
             with conn.cursor() as cursor:
-                # Tạo bảng tạm để lưu trữ dữ liệu từ CSV
+                # Create a temporary table to hold the CSV data.
                 cursor.execute("""
                     CREATE TEMP TABLE temp_menu (
                         restaurant_id INT,
@@ -65,13 +69,13 @@ def load_data_to_postgres(csv_files):
                     );
                 """)
 
-                # Sử dụng COPY để tải dữ liệu từ CSV vào bảng tạm
+                # Use COPY to load the CSV into the temporary table.
                 with open(csv_file_path, 'r') as file:
-                    next(file)  # Bỏ qua dòng tiêu đề
+                    next(file)  # Skip the header row.
                     cursor.copy_expert("COPY temp_menu FROM STDIN WITH CSV", file)
-                print(f"Dữ liệu từ {csv_file_path} đã được tải vào bảng tạm.")
+                print(f"Data from {csv_file_path} has been loaded into the temporary table.")
 
-                # Cập nhật và chèn dữ liệu từ bảng tạm vào bảng chính
+                # Update and insert data from the temporary table into the target table.
                 cursor.execute("""
                     UPDATE menu
                     SET end_date = CURRENT_TIMESTAMP, is_current = FALSE
@@ -84,9 +88,9 @@ def load_data_to_postgres(csv_files):
                         AND temp_menu.menu <> menu.menu
                     );
                 """)
-                print("Bản ghi cũ đã được cập nhật.")
+                print("Existing rows have been updated.")
 
-                # Chèn các bản ghi mới hoặc đã thay đổi từ bảng tạm vào bảng chính
+                # Insert new or changed rows from the temporary table into the target table.
                 cursor.execute("""
                     INSERT INTO menu (restaurant_id, menu, start_date, is_current)
                     SELECT restaurant_id, menu, CURRENT_TIMESTAMP, TRUE
@@ -96,18 +100,18 @@ def load_data_to_postgres(csv_files):
                     );
                 """)
                 conn.commit()
-                print(f"Dữ liệu mới từ {csv_file_path} đã được chèn vào bảng chính.")
+                print(f"New data from {csv_file_path} has been inserted into the target table.")
 
-                # Xóa bảng tạm sau khi xử lý xong
+                # Drop the temporary table after processing.
                 cursor.execute("DROP TABLE IF EXISTS temp_menu;")
 
-    except Exception as e:
-        print("Không thể chèn dữ liệu vào Azure PostgreSQL:")
+    except (psycopg2.Error, OSError) as e:
+            print("Unable to insert data into Azure PostgreSQL:")
         print(e)
     finally:
         if conn:
             conn.close()
 
-# Tách file CSV thành 5 phần và gọi hàm để tải dữ liệu từ từng phần
+# Split the CSV into parts and load each part.
 split_files = split_csv_file(csv_file_path, num_splits=10)
 load_data_to_postgres(split_files)
